@@ -1,0 +1,12 @@
+# Links shown in the app menu (☰ next to the name). Edit, then rebuild the
+# container. admin = true shows a link to the admin account only.
+# Only http(s) URLs are allowed. Links open in a new tab.
+
+[[links]]
+label = "Home Assistant"
+url = "https://ha.example.com/"
+
+[[links]]
+label = "Grafana"
+url = "http://localhost:3001/"
+admin = true

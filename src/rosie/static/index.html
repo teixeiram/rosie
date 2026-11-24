@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="{{theme_color}}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="{{name}}">
+<title>{{name}}</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/static/icons/{{icon_192}}">
+<link rel="apple-touch-icon" href="/static/icons/{{icon_192}}">
+<link rel="stylesheet" href="/static/style.css?v={{v_css}}">
+</head>
+<body>
+<header class="top">
+  <button id="menu-btn" class="menu-btn" type="button" aria-label="Menu" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" hidden><span></span><span></span><span></span></button>
+  <h1 id="app-name">{{name}}</h1>
+  <span id="section-name" class="section-name" aria-live="polite"></span>
+</header>
+
+<dialog id="drawer" class="drawer" aria-label="Menu">
+  <div class="drawer-panel">
+    <div class="drawer-head">
+      <strong>{{name}}</strong>
+      <button type="button" class="drawer-close" data-close aria-label="Close menu">×</button>
+    </div>
+    <nav aria-label="Sections"><ul class="drawer-list" id="drawer-sections"></ul></nav>
+    <h3 class="drawer-label" id="drawer-links-head" hidden>Links</h3>
+    <ul class="drawer-list" id="drawer-links"></ul>
+    <div class="drawer-foot">
+      <p class="muted" id="drawer-user"></p>
+      <button id="signout" type="button">Sign out</button>
+    </div>
+  </div>
+</dialog>
+
+<main id="main">
+  <section id="login" class="card" hidden>
+    <h2>Sign in</h2>
+    <form id="login-form">
+      <label>Username <input id="username" autocomplete="username" autocapitalize="none" required></label>
+      <label>Password <input id="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Sign in</button>
+      <p id="login-status" class="status" role="status"></p>
+    </form>
+  </section>
+
+  <div id="views"></div>
+</main>
+
+
+<template id="tpl-kitchen">
+  <div class="subtabs">
+    <button type="button" data-sub="lists">Lists</button>
+    <button type="button" data-sub="import" class="on">Import</button>
+    <button type="button" data-sub="chat">Chat</button>
+    <button type="button" data-sub="saved">Saved</button>
+  </div>
+  <div data-pane="lists" hidden>
+    <div class="chips list-chips" data-k="list-chips"></div>
+    <form class="add-row" data-k="add-form">
+      <input data-k="add-text" placeholder="Add items (separate with ;)" autocomplete="off" enterkeyhint="done">
+      <button type="submit" class="primary">Add</button>
+    </form>
+    <p class="status" data-k="list-status" role="status"></p>
+    <div data-k="list-body"></div>
+    <div class="row list-actions">
+      <button type="button" data-k="arrange">Arrange sections</button>
+      <button type="button" data-k="clear-checked">Clear checked</button>
+    </div>
+    <section class="card" data-k="arrange-panel" hidden>
+      <h2>Walk order</h2>
+      <p class="muted">Put the sections in the order you walk the store.</p>
+      <ol class="arrange" data-k="arrange-list"></ol>
+      <button type="button" class="primary" data-k="arrange-done">Done</button>
+    </section>
+  </div>
+  <div data-pane="import">
+    <section class="card" data-step="input">
+      <label>Recipe link <input data-k="url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></label>
+      <details data-k="text-box">
+        <summary>…or paste the recipe text</summary>
+        <div class="row"><button type="button" data-k="paste">Paste</button><button type="button" data-k="clear">Clear</button></div>
+        <textarea data-k="text" rows="8" placeholder="Paste a recipe, or the page text if the site blocks import" spellcheck="false"></textarea>
+      </details>
+      <div class="files-box">
+        <label class="file-pick">
+          <input type="file" data-k="files" accept="image/*,application/pdf" multiple>
+          <span>📷 Choose screenshots or PDF</span>
+        </label>
+        <p class="muted small">For Instagram, cookbook pages, or sites that block import. Several screenshots of one recipe are fine; you can also paste an image.</p>
+        <ul class="thumbs" data-k="thumbs" aria-label="Chosen files"></ul>
+      </div>
+      <div class="row">
+        <button type="button" class="primary" data-k="import">Import with AI</button>
+        <button type="button" data-k="as-is" title="Send pasted text unchanged, no AI">Send as-is</button>
+      </div>
+      <p class="muted" data-k="budget"></p>
+      <p class="status" data-k="status" role="status" aria-live="polite"></p>
+    </section>
+    <section class="card" data-step="preview" hidden>
+      <h2 data-k="title"></h2>
+      <p class="muted" data-k="source"></p>
+      <div class="recipe" data-k="rendered"></div>
+      <details>
+        <summary>Edit text</summary>
+        <textarea data-k="md" rows="14" spellcheck="false"></textarea>
+      </details>
+      <div class="row">
+        <button type="button" class="primary" data-k="send">Send to kitchen</button>
+        <button type="button" data-k="save">Save</button>
+        <button type="button" data-k="to-list">Add to list</button>
+      </div>
+      <button type="button" class="link" data-k="again">Start over</button>
+      <p class="status" data-k="status2" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+  <div data-pane="chat" hidden>
+    <div class="chat-top">
+      <button type="button" data-k="chats-toggle" aria-expanded="false" aria-controls="chats-panel">Earlier chats</button>
+      <span class="muted" data-k="chat-title"></span>
+    </div>
+    <section class="card" data-k="chats-panel" id="chats-panel" hidden>
+      <ul class="list chats" data-k="chats-list"></ul>
+      <p class="muted" data-k="chats-empty" hidden>No saved chats yet. Each chat is saved when Claude answers, and only you can see yours.</p>
+    </section>
+    <div class="chat-log" data-k="chat-log" aria-live="polite">
+      <p class="muted chat-hint">Ask about your recipes: "what can I make with chicken thighs and leeks?", "make the beef stew for 8", "something for the slow cooker this week".</p>
+    </div>
+    <section class="card chat-input">
+      <textarea data-k="chat-text" rows="2" placeholder="Ask about your recipes…"></textarea>
+      <div class="row">
+        <button type="button" class="primary" data-k="chat-send">Ask</button>
+        <button type="button" data-k="chat-new">New chat</button>
+      </div>
+      <p class="status" data-k="chat-status" role="status"></p>
+    </section>
+  </div>
+  <div data-pane="saved" hidden>
+    <div data-k="saved-browse">
+      <input type="search" class="search" data-k="saved-q" placeholder="Search recipes or ingredients" autocomplete="off" enterkeyhint="search" aria-label="Search saved recipes">
+      <section class="card"><ul class="list" data-k="saved-list"></ul><p class="muted" data-k="saved-empty" hidden>No saved recipes yet.</p></section>
+    </div>
+    <section class="card" data-k="saved-view" hidden>
+      <button type="button" class="link" data-k="saved-back">‹ All recipes</button>
+      <h2 data-k="saved-title"></h2>
+      <div class="recipe" data-k="saved-rendered"></div>
+      <p class="muted" data-k="saved-source"></p>
+      <div class="row">
+        <button type="button" class="primary" data-k="saved-send">Send to kitchen</button>
+        <button type="button" data-k="saved-to-list">Add to list</button>
+      </div>
+      <p class="status" data-k="saved-status" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+</template>
+
+<dialog id="picker" class="picker">
+  <form method="dialog" class="picker-form">
+    <h2>Add to list</h2>
+    <div class="chips" data-k="picker-lists"></div>
+    <p class="muted">Pantry staples are unticked.</p>
+    <ul class="picker-items" data-k="picker-items"></ul>
+    <div class="row">
+      <button type="button" class="primary" data-k="picker-add">Add</button>
+      <button value="cancel">Cancel</button>
+    </div>
+    <p class="status" data-k="picker-status" role="status"></p>
+  </form>
+</dialog>
+
+<template id="tpl-internet">
+  <div class="tiles" data-k="tiles"></div>
+  <p class="muted" data-k="checked"></p>
+  <div data-k="controls"></div>
+</template>
+
+<template id="tpl-placeholder">
+  <section class="card"><p data-k="message"></p></section>
+</template>
+
+<script src="/static/app.js?v={{v_js}}"></script>
+</body>
+</html>

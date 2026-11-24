@@ -1,0 +1,16 @@
+# Everything that names the app lives here, so a rename is a change to this
+# file plus the reverse-proxy host.
+# Nothing else in the code, database, container or API paths uses the name.
+
+name = "Rosie"
+short_name = "Rosie"
+description = "Our home app: kitchen, media, internet, home and developer tools"
+hostname = "rosie.example.com"
+theme_color = "#1f3b2d"
+background_color = "#1f3b2d"
+# Icons are served from /static/icons/.
+icon_192 = "icon-192.png"
+icon_512 = "icon-512.png"
+# For later versions (MCP connector name, voice wake word).
+connector_name = "rosie"
+wake_word = "Rosie"

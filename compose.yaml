@@ -1,0 +1,23 @@
+# Without a .env this is a development instance ("homeapp-dev" on port 8199),
+# so running Compose in a checkout can never replace the deployed app. The
+# deployed checkout (~/docker/rosie) sets APP_INSTANCE and APP_PORT in its
+# .env; see docs/deploy.md. The app name is not used here on purpose (rename
+# = branding.toml + Caddy host only).
+name: ${APP_INSTANCE:-homeapp-dev}
+
+services:
+  app:
+    build: .
+    container_name: ${APP_INSTANCE:-homeapp-dev}
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    # Localhost only; Caddy serves it over HTTPS on the LAN/Tailscale.
+    ports:
+      - "127.0.0.1:${APP_PORT:-8199}:8000"
+    # Prometheus is published on the host (9090), reached via the host gateway.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/data

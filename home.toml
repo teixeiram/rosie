@@ -1,0 +1,59 @@
+# Home section: the ONLY Home Assistant entities and actions the app may use.
+# The server refuses anything not listed here, whatever the browser sends.
+# Edit this file to add or remove tiles, then rebuild the container.
+# The entities below are examples; replace them with your own.
+#
+# kind:
+#   toggle     light / switch / fan / input_boolean: on, off
+#   script     script: run
+#   thermostat climate: set target temperature within [min, max]
+#   status     read-only (no actions at all)
+# confirm = true asks "Are you sure?" in the app first.
+# admin   = true shows it to the admin account only (and the server enforces it).
+#
+# section = "internet" on a room shows it in the Internet section instead of Home.
+
+dashboard_url = "https://ha.example.com/"
+
+[[rooms]]
+name = "Modes"
+tiles = [
+  { entity = "input_boolean.vacation_mode", label = "Vacation mode", kind = "toggle", confirm = true },
+]
+
+[[rooms]]
+name = "Office"
+tiles = [
+  { entity = "script.office_morning_light", label = "Morning light", kind = "script" },
+  { entity = "light.office_lights", label = "Office lights", kind = "toggle" },
+  { entity = "fan.office_fan", label = "Fan", kind = "toggle" },
+]
+
+[[rooms]]
+name = "Downstairs"
+tiles = [
+  { entity = "climate.downstairs", label = "Thermostat", kind = "thermostat", min = 60, max = 78 },
+]
+
+[[rooms]]
+name = "Garage"
+tiles = [
+  # Status only: opening a garage door from a phone deserves a confirm + notify flow first.
+  { entity = "lock.garage_door", label = "Garage door", kind = "status" },
+  { entity = "light.garage_light", label = "Light", kind = "toggle" },
+]
+
+# Calendars, read from Home Assistant. Only calendars listed here are shown, to
+# everyone, with full details. color is optional (#rrggbb).
+# tag (optional, short): shown on every day a multi-day event covers, e.g. on call.
+# The Calendar page names any HA calendars not listed yet (admin only).
+[[calendars]]
+entity = "calendar.family"
+label = "Family"
+color = "#2563eb"
+
+[[calendars]]
+entity = "calendar.on_call"
+label = "On call"
+color = "#ea580c"
+tag = "On call"
